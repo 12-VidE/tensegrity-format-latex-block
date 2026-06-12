@@ -7,14 +7,27 @@ var TensegrityFormatLatexBlockTransformer = () => {
   return {
     name: "TensegrityFormatLatexBlock",
     textTransform(_ctx, src) {
+      let text = src;
       const blockMathRegex = /\$\$(.*?)\$\$/gs;
-      return src.replace(blockMathRegex, (_match, content) => {
+      text = text.replace(blockMathRegex, (_match, content, offset, fullString) => {
+        const textBeforeMatch = fullString.substring(0, offset);
+        const lastNewlineIndex = textBeforeMatch.lastIndexOf("\n");
+        const currentLineStart = textBeforeMatch.substring(lastNewlineIndex + 1);
+        const prefixMatch = currentLineStart.match(/^[ \t]*(?:>[ \t]*)*/);
+        const prefix = prefixMatch ? prefixMatch[0] : "";
+        let cleanContent = content;
+        if (prefix) {
+          const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          cleanContent = cleanContent.replace(new RegExp(`^${escapedPrefix}`, "gm"), "");
+        }
+        cleanContent = cleanContent.trim();
         return `
-$$
-${content.trim()}
-$$
+${prefix}$$
+${prefix}${cleanContent}
+${prefix}$$
 `;
       });
+      return text;
     }
     // NOT needed: markdownPlugins, htmlPlugins, externalResources
   };
