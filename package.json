@@ -1,14 +1,14 @@
 {
-  "name": "@quartz-community/plugin-template",
+  "name": "@12-VidE/tensegrity-format-latex-block",
   "version": "0.1.0",
-  "description": "Template repository for Quartz community plugins.",
+  "description": "Transformer plugin to make `$$...$$` renders as `$$\n ...\n $$`",
   "type": "module",
   "license": "MIT",
-  "author": "Quartz Community",
-  "homepage": "https://quartz.jzhao.xyz",
+  "author": "12-VidE",
+  "homepage": "https://github.com/12-VidE/tensegrity-format-latex-block",
   "repository": {
     "type": "git",
-    "url": "https://github.com/quartz-community/plugin-template"
+    "url": "https://github.com/12-VidE/tensegrity-format-latex-block"
   },
   "keywords": [
     "quartz",
@@ -91,11 +91,11 @@
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0",
     "vfile": "^6.0.3",
-    "vitest": "^2.1.9"
+    "vitest": "^4.1.8"
   },
   "quartz": {
-    "name": "plugin-template",
-    "displayName": "Plugin Template",
+    "name": "tensegrity-format-latex-block",
+    "displayName": "(Tensegrity) Format Latex Block",
     "category": "transformer",
     "version": "1.0.0",
     "quartzVersion": ">=5.0.0",
@@ -103,23 +103,8 @@
     "defaultOrder": 50,
     "defaultEnabled": true,
     "defaultOptions": {},
-    "optionSchema": {
-      "highlightToken": {
-        "type": "enum",
-        "values": [
-          "==",
-          "**",
-          "~~"
-        ]
-      }
-    },
-    "components": {
-      "ExampleComponent": {
-        "displayName": "Example Component",
-        "defaultPosition": "right",
-        "defaultPriority": 50
-      }
-    }
+    "optionSchema": {},
+    "components": {}
   },
   "engines": {
     "node": ">=22",
