@@ -3,6 +3,7 @@ export { PageGenerator, PageMatcher, QuartzComponent, QuartzComponentConstructor
 
 /**
  * @returns Converts "$$...$$" to "$$\n ...\n $$" to render correctly
+ * respecting blockquote prefixes and preventing redundant newlines.
  * No user options needed
  */
 declare const TensegrityFormatLatexBlockTransformer: QuartzTransformerPlugin;
