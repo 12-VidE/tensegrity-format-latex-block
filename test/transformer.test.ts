@@ -23,7 +23,7 @@ describe("TensegrityFormatLatexBlock", () => {
     const transformer = TensegrityFormatLatexBlockTransformer();
 
     const input = "$$\n   \\frac{1}{2}   \n$$";
-    const expected = "\n$$\n\\frac{1}{2}\n$$\n";
+    const expected = "$$\n\\frac{1}{2}\n$$";
     const result = transformer.textTransform!(ctx, input);
     expect(result).toBe(expected);
   });
@@ -33,7 +33,7 @@ describe("TensegrityFormatLatexBlock", () => {
     const transformer = TensegrityFormatLatexBlockTransformer();
 
     const input = "> $$E = mc^2$$";
-    const expected = "\n> $$\n> E = mc^2\n> $$\n";
+    const expected = "> $$\n> E = mc^2\n> $$";
     const result = transformer.textTransform!(ctx, input);
     expect(result).toBe(expected);
   });
@@ -43,17 +43,27 @@ describe("TensegrityFormatLatexBlock", () => {
     const transformer = TensegrityFormatLatexBlockTransformer();
 
     const input = "> > $$a^2$$";
-    const expected = "\n> > $$\n> > a^2\n> > $$\n";
+    const expected = "> > $$\n> > a^2\n> > $$";
     const result = transformer.textTransform!(ctx, input);
     expect(result).toBe(expected);
   });
-  it("cleans up sloppy multi-line math inside deeply nested callouts", () => {
+  it("doesnt touch what's inside inline codeblocks", () => {
     const ctx = createCtx();
     const transformer = TensegrityFormatLatexBlockTransformer();
 
-    const input = "\n> $$a^2$$";
-    const expected = "\n> $$\n> > a^2\n> > $$\n";
+    const input = "`$$a^2$$`";
+    const expected = "`$$a^2$$`";
     const result = transformer.textTransform!(ctx, input);
     expect(result).toBe(expected);
   });
+  it("doesnt touch what's inside codeblocks", () => {
+    const ctx = createCtx();
+    const transformer = TensegrityFormatLatexBlockTransformer();
+
+    const input = "```c\n$$a^2$$\n```";
+    const expected = "```c\n$$a^2$$\n```";
+    const result = transformer.textTransform!(ctx, input);
+    expect(result).toBe(expected);
+  });
+  
 });

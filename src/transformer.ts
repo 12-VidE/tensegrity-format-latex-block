@@ -10,10 +10,17 @@ export const TensegrityFormatLatexBlockTransformer: QuartzTransformerPlugin = ()
     name: "TensegrityFormatLatexBlock",
 
     textTransform(_ctx: BuildCtx, src: string) {
-      let text = src
-      // Match ANY $$...$$ block globally, regardless of where it sits on the line
+      // 1. Mask code blocks to protect them from regex mutations
+      const codeBlocks: string[] = [];
+      // Matches 1 to 3 backticks, then lazily matches content until the same number of backticks
+      let text = src.replace(/(`{1,3})[\s\S]*?\1/g, (match) => {
+        codeBlocks.push(match);
+        return `__TENSEGRITY_CODE_MASK_${codeBlocks.length - 1}__`;
+      });
+
+      // 2. Match ANY $$...$$ block globally, regardless of where it sits on the line
       const blockMathRegex = /\$\$(.*?)\$\$/gs;
-      text = src.replace(blockMathRegex, (match, content, offset, fullString) => {
+      text = text.replace(blockMathRegex, (match, content, offset, fullString) => {
         // 1. Analyze the context BEFORE the $$
         const textBeforeMatch = fullString.substring(0, offset);
         const lastNewlineIndex = textBeforeMatch.lastIndexOf('\n');
@@ -46,6 +53,11 @@ export const TensegrityFormatLatexBlockTransformer: QuartzTransformerPlugin = ()
         // 6. Rebuild the block
         return `${prepend}$$\n${prefix}${cleanContent}\n${prefix}$$${append}`;
       });
+      text = text.replace(/__TENSEGRITY_CODE_MASK_(\d+)__/g, (match: string, index: string) => {
+        const blockIndex = Number(index);
+        return codeBlocks[blockIndex] ?? match;
+      });
+
       return text;
     }
     

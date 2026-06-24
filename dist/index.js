@@ -7,9 +7,13 @@ var TensegrityFormatLatexBlockTransformer = () => {
   return {
     name: "TensegrityFormatLatexBlock",
     textTransform(_ctx, src) {
-      let text = src;
+      const codeBlocks = [];
+      let text = src.replace(/(`{1,3})[\s\S]*?\1/g, (match) => {
+        codeBlocks.push(match);
+        return `__TENSEGRITY_CODE_MASK_${codeBlocks.length - 1}__`;
+      });
       const blockMathRegex = /\$\$(.*?)\$\$/gs;
-      text = src.replace(blockMathRegex, (match, content, offset, fullString) => {
+      text = text.replace(blockMathRegex, (match, content, offset, fullString) => {
         const textBeforeMatch = fullString.substring(0, offset);
         const lastNewlineIndex = textBeforeMatch.lastIndexOf("\n");
         const currentLineStart = textBeforeMatch.substring(lastNewlineIndex + 1);
@@ -32,6 +36,10 @@ ${prefix}`;
         return `${prepend}$$
 ${prefix}${cleanContent}
 ${prefix}$$${append}`;
+      });
+      text = text.replace(/__TENSEGRITY_CODE_MASK_(\d+)__/g, (match, index) => {
+        const blockIndex = Number(index);
+        return codeBlocks[blockIndex] ?? match;
       });
       return text;
     }
